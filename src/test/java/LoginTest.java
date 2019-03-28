@@ -1,3 +1,4 @@
+import models.User;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -7,8 +8,9 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import pages.UkrNetLoginPage;
 
-public class TutByTest {
+public class LoginTest {
 
     private WebDriver driver;
 
@@ -29,15 +31,18 @@ public class TutByTest {
     }
 
     @Test
-    public void TestAuthorization() {
-        driver.navigate().to("https://www.tut.by");
-        driver.switchTo().frame(driver.findElement(By.id("top_bar_helper")));
+    public void TestAuthorization() throws InterruptedException {
+        driver.navigate().to("https://accounts.ukr.net/login");
+        UkrNetLoginPage loginPage = new UkrNetLoginPage(driver);
+        User user = User.CreateExistingUser();
+        loginPage.LoginUser(user);
+        /*driver.switchTo().frame(driver.findElement(By.id("top_bar_helper")));
         driver.findElement(By.cssSelector("#authorize > div > a")).click();
         driver.findElement(By.cssSelector("form.auth-form input[name='login']")).sendKeys("login");
         driver.findElement(By.cssSelector("form.auth-form input[name='password']")).sendKeys("password");
         //driver.findElement(By.cssSelector("form.auth-form input[type='submit']")).click();
         driver.findElement(By.cssSelector(".b-auth-soc .social__btn--fb")).click();
         WebElement userName = driver.findElement(By.cssSelector("#authorize .uname"));
-        assert userName.getText().equals("Александр Бессмертный");
+        assert userName.getText().equals("Александр Бессмертный");*/
     }
 }
