@@ -27,8 +27,9 @@ class CaptchaPage {
 
     }
 
-    void EnterCaptcha() {
+    void EnterCaptcha() throws InterruptedException {
         capchaCheckbox.click();
+        Thread.sleep(5000);
         driver.switchTo().defaultContent();
     }
 }

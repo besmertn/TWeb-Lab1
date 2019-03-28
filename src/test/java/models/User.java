@@ -32,6 +32,9 @@ public class User {
     public static User CreateExistingUser() {
         return new User("besmertn", "56445556");
     }
+    public static User CreateNotExistingUser() {
+        return new User("besmertnA", "56445556A");
+    }
 
     public static User CreateValidUser() {
         return new User("test_user",

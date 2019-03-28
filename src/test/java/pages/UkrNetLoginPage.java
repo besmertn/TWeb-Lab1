@@ -10,6 +10,7 @@ import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import sun.rmi.runtime.Log;
 
 public class UkrNetLoginPage {
     private static String URL_MATCH = "login";
@@ -31,6 +32,9 @@ public class UkrNetLoginPage {
     @FindBy(css = ".form__controls a:last-child")
     private WebElement registerLink;
 
+    @FindBy(css = ".form__error_fail")
+    private WebElement loginError;
+
 
     public UkrNetLoginPage(WebDriver driver) {
         this.driver = driver;
@@ -42,19 +46,19 @@ public class UkrNetLoginPage {
         PageFactory.initElements(driver, this);
     }
 
-    public MailBoxPage LoginUser(User user) throws InterruptedException {
+    private void LoginUser(User user) throws InterruptedException {
         login.sendKeys(user.getLogin());
         password.sendKeys(user.getPassword());
 
         //Thread.sleep(1000);
         submitButton.click();
         try {
+            Thread.sleep(1000);
             CaptchaPage captcha = new CaptchaPage(driver);
             captcha.EnterCaptcha();
             submitButton.click();
-        } catch (NoSuchElementException ignored) {}
-        Thread.sleep(1000);
-        return new MailBoxPage(driver);
+        } catch (NoSuchElementException ignored) {
+        }
     }
 
     public MailBoxPage LoginUserPublicComputer(User user) throws InterruptedException {
@@ -68,16 +72,42 @@ public class UkrNetLoginPage {
             CaptchaPage captcha = new CaptchaPage(driver);
             captcha.EnterCaptcha();
             submitButton.click();
-        } catch (NoSuchElementException ignored) {}
+        } catch (NoSuchElementException ignored) {
+        }
 
         return new MailBoxPage(driver);
+    }
+
+    public MailBoxPage LoginUserSuccess(User user) throws InterruptedException {
+        LoginUser(user);
+        Thread.sleep(1000);
+
+        return new MailBoxPage(driver);
+    }
+
+    public UkrNetLoginPage LoginUserError(User user) throws InterruptedException {
+        LoginUser(user);
+        return new UkrNetLoginPage(driver);
+    }
+
+    public UkrNetLoginPage CheckErrorMessage(String errorMessage) {
+        Assert.assertTrue("Error message should be present", loginError.isDisplayed());
+        Assert.assertTrue("Error message should contains " + errorMessage.trim(),
+                loginError.getText().contains(errorMessage.trim()));
+        return this;
+    }
+
+    public RegistrationPage GoToRegistration() throws InterruptedException {
+        registerLink.click();
+
+        return new RegistrationPage(driver);
     }
 
     public void waitForLoad() {
         ExpectedCondition<Boolean> pageLoadCondition = new
                 ExpectedCondition<Boolean>() {
                     public Boolean apply(WebDriver driver) {
-                        return ((JavascriptExecutor)driver).executeScript("return document.readyState").equals("complete");
+                        return ((JavascriptExecutor) driver).executeScript("return document.readyState").equals("complete");
                     }
                 };
         WebDriverWait wait = new WebDriverWait(driver, 30);
